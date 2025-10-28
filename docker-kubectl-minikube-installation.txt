@@ -1,0 +1,93 @@
+Docker Engine, Kubectl, and MiniKube Installation Guide
+=========================================================
+
+This guide provides step-by-step instructions for installing Docker Engine, Kubectl, and MiniKube on a Linux Ubuntu system.
+
+===============================================================================
+INSTALL DOCKER ENGINE
+===============================================================================
+
+1. Uninstall old versions:
+   sudo apt-get remove docker docker-engine docker.io containerd runc
+
+2. Update the apt package index and install prerequisites:
+   sudo apt-get update
+   sudo apt-get install \
+   apt-transport-https \
+   ca-certificates \
+   curl \
+   gnupg \
+   lsb-release
+
+3. Add Docker's official GPG key:
+   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+4. Set up the stable repository:
+   echo \
+   "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+5. Install Docker Engine:
+   sudo apt-get update
+   sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+6. Verify Docker version:
+   docker --version
+
+===============================================================================
+INSTALL KUBECTL
+===============================================================================
+
+1. Download the latest release:
+   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+2. Install kubectl:
+   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+3. Test to ensure the version installed is up-to-date:
+   kubectl version --client
+
+===============================================================================
+INSTALL MINIKUBE
+===============================================================================
+
+1. Download Binary:
+   curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+   chmod +x minikube-linux-amd64
+
+2. Install Minikube:
+   sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+3. Verify Installation:
+   minikube version
+
+4. Start Kubernetes Cluster:
+   sudo apt install conntrack
+   sudo minikube start --vm-driver=none
+
+5. Get Cluster Information:
+   kubectl config view
+
+===============================================================================
+INSTALLATION ORDER
+===============================================================================
+
+It is recommended to install the components in the following order:
+1. Docker Engine (required for containerization)
+2. Kubectl (Kubernetes command-line tool)
+3. MiniKube (local Kubernetes cluster)
+
+===============================================================================
+NOTES
+===============================================================================
+
+- Make sure you have sudo privileges to run these commands
+- Some commands may require an internet connection
+- After installing Docker, you might need to add your user to the docker group:
+  sudo usermod -aG docker $USER
+  (Then log out and log back in for the changes to take effect)
+
+- MiniKube with --vm-driver=none runs directly on the host machine
+- Alternative VM drivers for MiniKube include virtualbox, vmware, etc.
+
+===============================================================================
