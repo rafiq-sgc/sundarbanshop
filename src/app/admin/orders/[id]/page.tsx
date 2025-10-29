@@ -44,30 +44,39 @@ interface OrderItem {
 interface Order {
   _id: string
   orderNumber: string
-  user: {
+  user?: {
     _id: string
     name: string
     email: string
     phone?: string
   }
+  isGuestOrder?: boolean
+  customerInfo: {
+    name: string
+    email: string
+    phone?: string
+  }
+  guestEmail?: string
   items: OrderItem[]
   shippingAddress: {
     name: string
     phone: string
     address: string
     city: string
-    state: string
-    zipCode: string
+    state?: string
+    zipCode?: string
     country: string
+    email?: string
   }
   billingAddress?: {
     name: string
     phone: string
     address: string
     city: string
-    state: string
-    zipCode: string
+    state?: string
+    zipCode?: string
     country: string
+    email?: string
   }
   paymentMethod: string
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded'
@@ -281,26 +290,38 @@ export default function OrderDetailPage() {
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5" />
                 Customer Information
+                {order.isGuestOrder && (
+                  <Badge variant="secondary" className="ml-2">
+                    Guest Order
+                  </Badge>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
                 <p className="text-sm text-gray-600">Name</p>
-                <p className="font-semibold text-gray-900">{order.user.name}</p>
+                <p className="font-semibold text-gray-900">{order.customerInfo.name}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Email</p>
                 <p className="font-semibold text-gray-900 flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  {order.user.email}
+                  {order.customerInfo.email}
                 </p>
               </div>
-              {order.user.phone && (
+              {order.customerInfo.phone && order.customerInfo.phone !== 'No phone provided' && (
                 <div>
                   <p className="text-sm text-gray-600">Phone</p>
                   <p className="font-semibold text-gray-900 flex items-center gap-2">
                     <Phone className="w-4 h-4" />
-                    {order.user.phone}
+                    {order.customerInfo.phone}
+                  </p>
+                </div>
+              )}
+              {order.isGuestOrder && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Note:</strong> This is a guest order. Customer information is from the shipping address.
                   </p>
                 </div>
               )}
@@ -319,13 +340,21 @@ export default function OrderDetailPage() {
               <p className="font-semibold text-gray-900">{order.shippingAddress.name}</p>
               <p className="text-gray-700">{order.shippingAddress.address}</p>
               <p className="text-gray-700">
-                {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
+                {order.shippingAddress.city}
+                {order.shippingAddress.state && `, ${order.shippingAddress.state}`}
+                {order.shippingAddress.zipCode && ` ${order.shippingAddress.zipCode}`}
               </p>
               <p className="text-gray-700">{order.shippingAddress.country}</p>
               <p className="text-gray-700 flex items-center gap-2">
                 <Phone className="w-4 h-4" />
                 {order.shippingAddress.phone}
               </p>
+              {order.shippingAddress.email && (
+                <p className="text-gray-700 flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  {order.shippingAddress.email}
+                </p>
+              )}
             </CardContent>
           </Card>
 
@@ -342,13 +371,21 @@ export default function OrderDetailPage() {
                 <p className="font-semibold text-gray-900">{order.billingAddress.name}</p>
                 <p className="text-gray-700">{order.billingAddress.address}</p>
                 <p className="text-gray-700">
-                  {order.billingAddress.city}, {order.billingAddress.state} {order.billingAddress.zipCode}
+                  {order.billingAddress.city}
+                  {order.billingAddress.state && `, ${order.billingAddress.state}`}
+                  {order.billingAddress.zipCode && ` ${order.billingAddress.zipCode}`}
                 </p>
                 <p className="text-gray-700">{order.billingAddress.country}</p>
                 <p className="text-gray-700 flex items-center gap-2">
                   <Phone className="w-4 h-4" />
                   {order.billingAddress.phone}
                 </p>
+                {order.billingAddress.email && (
+                  <p className="text-gray-700 flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    {order.billingAddress.email}
+                  </p>
+                )}
               </CardContent>
             </Card>
           )}

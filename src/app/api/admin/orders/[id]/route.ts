@@ -36,9 +36,24 @@ export async function GET(
       )
     }
 
+    // Handle guest orders - if no user, use shipping address data
+    const orderData = {
+      ...order,
+      isGuestOrder: !(order as any).user,
+      customerInfo: (order as any).user ? {
+        name: (order as any).user.name,
+        email: (order as any).user.email,
+        phone: (order as any).user.phone
+      } : {
+        name: (order as any).shippingAddress?.name || 'Guest Customer',
+        email: (order as any).guestEmail || (order as any).shippingAddress?.email || 'No email provided',
+        phone: (order as any).shippingAddress?.phone || 'No phone provided'
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      data: order
+      data: orderData
     })
   } catch (error) {
     console.error('Get order error:', error)
@@ -137,12 +152,28 @@ async function handleOrderUpdate(
       )
     }
 
+    // Handle guest orders - if no user, use shipping address data
+    const orderData = {
+      ...order,
+      isGuestOrder: !(order as any).user,
+      customerInfo: (order as any).user ? {
+        name: (order as any).user.name,
+        email: (order as any).user.email,
+        phone: (order as any).user.phone
+      } : {
+        name: (order as any).shippingAddress?.name || 'Guest Customer',
+        email: (order as any).guestEmail || (order as any).shippingAddress?.email || 'No email provided',
+        phone: (order as any).shippingAddress?.phone || 'No phone provided'
+      }
+    }
+
     // Send email notification if status changed (background task, NO PDF)
     if (statusChanged) {
-      const customer = await User.findById(order.user)
+      const customerEmail = (order as any).user?.email || (order as any).guestEmail || (order as any).shippingAddress?.email
+      const customerName = (order as any).user?.name || (order as any).shippingAddress?.name || 'Guest Customer'
       
-      if (customer && customer.email) {
-        console.log(`Order status changed to ${order.orderStatus}, queuing status update email to ${customer.email}`)
+      if (customerEmail && customerEmail !== 'No email provided') {
+        console.log(`Order status changed to ${order.orderStatus}, queuing status update email to ${customerEmail}`)
         
         // Send email in background (don't await, NO PDF attachment)
         orderEmailService.sendOrderStatusUpdate(
@@ -150,9 +181,9 @@ async function handleOrderUpdate(
             orderNumber: order.orderNumber,
             orderDate: order.createdAt,
             customer: {
-              name: customer.name,
-              email: customer.email,
-              phone: customer.phone
+              name: customerName,
+              email: customerEmail,
+              phone: (order as any).user?.phone || (order as any).shippingAddress?.phone
             },
             items: order.items.map((item: any) => ({
               name: item.name,
@@ -171,7 +202,7 @@ async function handleOrderUpdate(
             paymentStatus: order.paymentStatus,
             orderStatus: order.orderStatus,
             trackingNumber: order.trackingNumber,
-            orderUrl: `${process.env.NEXTAUTH_URL}/dashboard/orders/${order._id}`
+            orderUrl: (order as any).user ? `${process.env.NEXTAUTH_URL}/dashboard/orders/${order._id}` : `${process.env.NEXTAUTH_URL}/order-confirmation?orderId=${order._id}&orderNumber=${order.orderNumber}`
           },
           {
             trackingNumber: order.trackingNumber,
@@ -190,7 +221,7 @@ async function handleOrderUpdate(
     return NextResponse.json({
       success: true,
       message: 'Order updated successfully',
-      data: order
+      data: orderData
     })
   } catch (error) {
     console.error('Update order error:', error)

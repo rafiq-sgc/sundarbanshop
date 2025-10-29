@@ -4,7 +4,7 @@ import Order from '@/models/Order'
 import Cart from '@/models/Cart'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { orderEmailService } from '@/services/email/order.service'
+import { orderEmailService } from '@/services/order/order-email.service'
 
 export async function GET(request: NextRequest) {
   try {
@@ -169,11 +169,43 @@ export async function POST(request: NextRequest) {
 
     if (customerEmail) {
       try {
-        await orderEmailService.sendOrderConfirmation({
-          order: order,
-          customerEmail: customerEmail,
-          customerName: customerName
-        })
+        // Transform order data for the email service
+        const emailData = {
+          orderNumber: order.orderNumber,
+          orderDate: order.createdAt,
+          customer: {
+            name: customerName,
+            email: customerEmail,
+            phone: order.shippingAddress?.phone
+          },
+          items: order.items.map((item: any) => ({
+            name: item.name,
+            sku: item.sku,
+            quantity: item.quantity,
+            price: item.price,
+            total: item.total
+          })),
+          shippingAddress: {
+            name: order.shippingAddress.name,
+            address: order.shippingAddress.address,
+            city: order.shippingAddress.city,
+            state: order.shippingAddress.state || '',
+            zipCode: order.shippingAddress.zipCode || '',
+            country: order.shippingAddress.country,
+            phone: order.shippingAddress.phone
+          },
+          subtotal: order.subtotal,
+          tax: order.tax,
+          shipping: order.shipping,
+          discount: order.discount || 0,
+          total: order.total,
+          paymentMethod: order.paymentMethod,
+          paymentStatus: order.paymentStatus,
+          orderStatus: order.orderStatus,
+          orderUrl: `${process.env.NEXTAUTH_URL}/order-confirmation?orderId=${order._id}&orderNumber=${order.orderNumber}`
+        }
+
+        await orderEmailService.sendOrderConfirmationWithInvoice(emailData)
       } catch (emailError) {
         console.error('Failed to send order confirmation email:', emailError)
         // Don't fail the order if email fails
