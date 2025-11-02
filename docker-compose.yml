@@ -1,111 +1,51 @@
 version: '3.8'
 
 services:
-  # MongoDB Database
-  mongodb:
-    image: mongo:7.0
-    container_name: ekomart-mongodb
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password123}
-      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-ekomart}
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    networks:
-      - ekomart-network
-
-  # Redis for caching and sessions
-  redis:
-    image: redis:7-alpine
-    container_name: ekomart-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - ekomart-network
-
-  # Next.js Application
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ekomart-app
-    restart: unless-stopped
+    image: ekomart-app:latest
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb+srv://ekomart:ekomart@cluster0.0k93d5b.mongodb.net/ekomart?retryWrites=true&w=majority
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - EMAIL_SERVICE=${EMAIL_SERVICE}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - PORT=3000
     ports:
       - "3000:3000"
-    environment:
-      # Database
-      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-password123}@mongodb:27017/${MONGO_DATABASE:-ekomart}?authSource=admin
-      
-      # NextAuth
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-your-super-secret-key-change-this-in-production}
-      
-      # Email Configuration
-      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
-      SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_USER: ${SMTP_USER:-}
-      SMTP_PASS: ${SMTP_PASS:-}
-      
-      # Redis
-      REDIS_URL: redis://redis:6379
-      
-      # App Configuration
-      NODE_ENV: production
-      PORT: 3000
-      
-      # File Upload
-      UPLOAD_DIR: /app/uploads
-      MAX_FILE_SIZE: 10485760
-      
-      # Security
-      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-key-change-this-in-production}
-      
-      # Payment (if using)
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
-      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
-      
-      # Other services
-      BCRYPT_ROUNDS: 12
-    volumes:
-      - uploads_data:/app/uploads
-      - ./public/uploads:/app/public/uploads
     depends_on:
-      - mongodb
       - redis
-    networks:
-      - ekomart-network
 
-  # Nginx Reverse Proxy
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
   nginx:
-    image: nginx:alpine
-    container_name: ekomart-nginx
-    restart: unless-stopped
+    image: nginx:stable-alpine
+    restart: always
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
+      - ./public:/app/public:ro
     depends_on:
       - app
-    networks:
-      - ekomart-network
-
-volumes:
-  mongodb_data:
-    driver: local
-  redis_data:
-    driver: local
-  uploads_data:
-    driver: local
 
 networks:
-  ekomart-network:
+  default:
     driver: bridge
