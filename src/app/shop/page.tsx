@@ -39,7 +39,10 @@ import { Separator } from '@/components/ui/separator'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 
-export default function ShopPage() {
+
+import { Suspense } from 'react'
+
+function ShopPageInner() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -955,5 +958,13 @@ export default function ShopPage() {
       
       <Footer />
     </div>
+  )
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<div>Loading shop...</div>}>
+      <ShopPageInner />
+    </Suspense>
   )
 }

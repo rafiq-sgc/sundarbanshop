@@ -44,13 +44,13 @@ const TransactionSchema = new Schema<ITransaction>(
       type: String,
       required: true,
       enum: ['income', 'expense', 'refund'],
-      index: true
+    // index removed, see schema.index below
     },
     category: {
       type: String,
       required: true,
       enum: ['order', 'refund', 'shipping', 'tax', 'commission', 'other'],
-      index: true
+    // index removed, see schema.index below
     },
     amount: {
       type: Number,
@@ -67,7 +67,7 @@ const TransactionSchema = new Schema<ITransaction>(
       required: true,
       enum: ['pending', 'completed', 'failed', 'cancelled'],
       default: 'pending',
-      index: true
+    // index removed, see schema.index below
     },
     
     // References
@@ -106,7 +106,7 @@ const TransactionSchema = new Schema<ITransaction>(
       type: Date,
       required: true,
       default: Date.now,
-      index: true
+    // index removed, see schema.index below
     }
   },
   {

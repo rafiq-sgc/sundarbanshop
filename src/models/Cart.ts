@@ -58,7 +58,7 @@ const cartSchema = new Schema({
     ref: 'User',
     required: true,
     unique: true,
-    index: true
+    // index removed, see schema.index below
   },
   items: [cartItemSchema]
 }, {

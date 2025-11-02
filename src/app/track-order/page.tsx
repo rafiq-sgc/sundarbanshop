@@ -69,7 +69,9 @@ interface Order {
   }
 }
 
-export default function TrackOrderPage() {
+import { Suspense } from 'react'
+
+function TrackOrderPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -494,5 +496,13 @@ export default function TrackOrderPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function TrackOrderPage() {
+  return (
+    <Suspense fallback={<div>Loading track order...</div>}>
+      <TrackOrderPageInner />
+    </Suspense>
   )
 }

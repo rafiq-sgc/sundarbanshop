@@ -66,19 +66,19 @@ const refundSchema = new Schema({
     required: true,
     unique: true,
     uppercase: true,
-    index: true
+    // index removed, see schema.index below
   },
   order: {
     type: Schema.Types.ObjectId,
     ref: 'Order',
     required: [true, 'Order is required'],
-    index: true
+    // index removed, see schema.index below
   },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: [true, 'User is required'],
-    index: true
+    // index removed, see schema.index below
   },
   items: {
     type: [refundItemSchema],
@@ -120,7 +120,7 @@ const refundSchema = new Schema({
       message: 'Invalid status'
     },
     default: 'pending',
-    index: true
+      // index removed, see schema.index below
   },
   images: [{
     type: String,

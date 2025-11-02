@@ -109,7 +109,7 @@ const shippingZoneSchema = new Schema({
   isActive: {
     type: Boolean,
     default: true,
-    index: true
+    // index removed, see schema.index below
   },
   sortOrder: {
     type: Number,

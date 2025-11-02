@@ -66,13 +66,13 @@ const supportTicketSchema = new Schema({
     required: true,
     unique: true,
     uppercase: true,
-    index: true
+    // index removed, see schema.index below
   },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: [true, 'User is required'],
-    index: true
+    // index removed, see schema.index below
   },
   subject: {
     type: String,
@@ -84,7 +84,7 @@ const supportTicketSchema = new Schema({
     type: String,
     required: [true, 'Category is required'],
     trim: true,
-    index: true
+    // index removed, see schema.index below
   },
   priority: {
     type: String,
@@ -93,7 +93,7 @@ const supportTicketSchema = new Schema({
       message: 'Invalid priority'
     },
     default: 'medium',
-    index: true
+      // index removed, see schema.index below
   },
   status: {
     type: String,
@@ -102,7 +102,7 @@ const supportTicketSchema = new Schema({
       message: 'Invalid status'
     },
     default: 'open',
-    index: true
+      // index removed, see schema.index below
   },
   description: {
     type: String,
@@ -116,7 +116,7 @@ const supportTicketSchema = new Schema({
   assignedTo: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    index: true
+    // index removed, see schema.index below
   },
   messages: [ticketMessageSchema],
   tags: [{
@@ -137,7 +137,7 @@ const supportTicketSchema = new Schema({
   lastResponseAt: {
     type: Date,
     default: Date.now,
-    index: true
+    // index removed, see schema.index below
   }
 }, {
   timestamps: true

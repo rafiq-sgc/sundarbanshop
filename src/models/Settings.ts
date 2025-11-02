@@ -18,7 +18,7 @@ const settingsSchema = new Schema({
     type: String,
     required: [true, 'Category is required'],
     trim: true,
-    index: true,
+    // index removed, see schema.index below
     enum: {
       values: [
         'general', 'store', 'payment', 'shipping', 'tax', 
@@ -33,7 +33,7 @@ const settingsSchema = new Schema({
     required: [true, 'Key is required'],
     trim: true,
     lowercase: true,
-    index: true
+    // index removed, see schema.index below
   },
   value: {
     type: Schema.Types.Mixed,

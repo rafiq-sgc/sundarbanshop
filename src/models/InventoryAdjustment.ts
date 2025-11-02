@@ -51,13 +51,13 @@ const inventoryAdjustmentSchema = new Schema({
     unique: true,
     uppercase: true,
     trim: true,
-    index: true
+    // index removed, see schema.index below
   },
   warehouse: {
     type: Schema.Types.ObjectId,
     ref: 'Warehouse',
     required: [true, 'Warehouse is required'],
-    index: true
+    // index removed, see schema.index below
   },
   items: {
     type: [adjustmentItemSchema],
@@ -73,7 +73,7 @@ const inventoryAdjustmentSchema = new Schema({
     type: String,
     enum: ['stock_count', 'damaged', 'lost', 'found', 'correction', 'other'],
     required: true,
-    index: true
+    // index removed, see schema.index below
   },
   reason: {
     type: String,
@@ -94,7 +94,7 @@ const inventoryAdjustmentSchema = new Schema({
     type: String,
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending',
-    index: true
+    // index removed, see schema.index below
   },
   notes: {
     type: String,

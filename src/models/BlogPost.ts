@@ -25,16 +25,14 @@ const blogPostSchema = new Schema({
     type: String,
     required: [true, 'Title is required'],
     trim: true,
-    maxlength: [200, 'Title cannot exceed 200 characters'],
-    index: true
+    maxlength: [200, 'Title cannot exceed 200 characters']
   },
   slug: {
     type: String,
     required: [true, 'Slug is required'],
     unique: true,
     lowercase: true,
-    trim: true,
-    index: true
+    trim: true
   },
   excerpt: {
     type: String,
@@ -53,14 +51,12 @@ const blogPostSchema = new Schema({
   category: {
     type: String,
     required: [true, 'Category is required'],
-    trim: true,
-    index: true
+    trim: true
   },
   tags: [{
     type: String,
     trim: true,
-    lowercase: true,
-    index: true
+    lowercase: true
   }],
   author: {
     type: Schema.Types.ObjectId,
@@ -73,8 +69,7 @@ const blogPostSchema = new Schema({
       values: ['draft', 'published', 'archived'],
       message: 'Status must be draft, published, or archived'
     },
-    default: 'draft',
-    index: true
+    default: 'draft'
   },
   views: {
     type: Number,
@@ -96,8 +91,7 @@ const blogPostSchema = new Schema({
     maxlength: [160, 'Meta description cannot exceed 160 characters']
   },
   publishedAt: {
-    type: Date,
-    index: true
+    type: Date
   }
 }, {
   timestamps: true

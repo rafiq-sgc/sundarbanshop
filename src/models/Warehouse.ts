@@ -73,7 +73,7 @@ const warehouseSchema = new Schema({
     unique: true,
     uppercase: true,
     trim: true,
-    index: true,
+    // index removed, see schema.index below
     minlength: [2, 'Code must be at least 2 characters'],
     maxlength: [10, 'Code cannot exceed 10 characters']
   },
@@ -98,7 +98,7 @@ const warehouseSchema = new Schema({
   isActive: {
     type: Boolean,
     default: true,
-    index: true
+    // index removed, see schema.index below
   },
   inventory: [warehouseInventorySchema]
 }, {
