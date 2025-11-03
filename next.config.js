@@ -4,7 +4,7 @@ const nextConfig = {
   output: 'standalone',
   
   images: {
-    domains: ['localhost', 'ekomart-nextjs.vercel.app'],
+    domains: ['localhost', 'ekomart-nextjs.vercel.app', 'sundarbanshop.com'],
     remotePatterns: [
       {
         protocol: 'https',

@@ -1,0 +1,11 @@
+#!/bin/bash
+echo "Checking DNS for sundarbanshop.com..."
+echo "Expected IP: 138.68.49.250"
+echo ""
+echo "Main domain:"
+nslookup sundarbanshop.com 8.8.8.8 2>&1 | grep -A 2 "answer:" || echo "❌ Not configured yet"
+echo ""
+echo "WWW subdomain:"
+nslookup www.sundarbanshop.com 8.8.8.8 2>&1 | grep -A 2 "answer:" || echo "❌ Not configured yet"
+echo ""
+echo "If you see IP 138.68.49.250 above, DNS is ready!"
