@@ -4,13 +4,19 @@ const nextConfig = {
   output: 'standalone',
   
   images: {
-    domains: ['localhost', 'ekomart-nextjs.vercel.app', 'sundarbanshop.com'],
+    domains: ['localhost', 'ekomart-nextjs.vercel.app', 'sundarbanshop.com', 'www.sundarbanshop.com'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
     ],
+    // Allow images from uploads directory
+    unoptimized: process.env.NODE_ENV === 'production',
   },
   env: {
     MONGODB_URI: process.env.MONGODB_URI,

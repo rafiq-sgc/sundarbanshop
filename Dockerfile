@@ -58,6 +58,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Create uploads directory structure
+RUN mkdir -p /app/public/uploads/products /app/public/uploads/categories
+
 RUN chown -R nextjs:nodejs /app
 
 USER nextjs
